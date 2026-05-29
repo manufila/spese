@@ -518,9 +518,7 @@ function renderExpenseList(arr, containerId, compact){
 
 // ---- RENDER HISTORY ----
 function renderHistory(){
-  const now = new Date();
-  const currentMonth = new Date(now.getFullYear(), now.getMonth(), 1);
-  const arr = historyTab==='all' ? [...expenses] : [...getMonthExpenses(currentMonth)];
+  const arr = historyTab==='all' ? [...expenses] : [...getMonthExpenses(viewMonth)];
   arr.sort((a,b)=>b.date.localeCompare(a.date));
   const el = document.getElementById('history-list');
   if(!arr.length){
