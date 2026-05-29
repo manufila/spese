@@ -11,8 +11,6 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
-  .month-nav { display: flex; align-items: center; gap: 8px; }
-  .month-arrow { background: var(--surface2); border: 1px solid var(--border2); border-radius: 20px; width: 30px; height: 30px; font-size: 20px; line-height: 1; color: var(--text2); cursor: pointer; display: flex; align-items: center; justify-content: center; padding-bottom: 2px; }
   :root {
     --bg: #0f0f11;
     --surface: #1a1a1f;
@@ -46,8 +44,9 @@
   .topbar { padding: 54px 20px 16px; background: var(--bg); position: sticky; top: 0; z-index: 100; backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-bottom: 1px solid var(--border); }
   .topbar-inner { display: flex; align-items: center; justify-content: space-between; }
   .topbar h1 { font-size: 20px; font-weight: 600; letter-spacing: -0.4px; }
-  .month-pill { background: var(--surface2); border: 1px solid var(--border2); border-radius: 20px; padding: 6px 14px; font-size: 13px; font-weight: 500; color: var(--text2); cursor: pointer; display: flex; align-items: center; gap: 6px; }
-  .month-pill svg { width: 14px; height: 14px; }
+  .month-nav { display: flex; align-items: center; gap: 6px; }
+  .month-arrow { background: var(--surface2); border: 1px solid var(--border2); border-radius: 50%; width: 30px; height: 30px; font-size: 18px; color: var(--text2); cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .month-label { font-size: 13px; font-weight: 500; color: var(--text2); min-width: 110px; text-align: center; }
 
   /* Nav */
   .nav { display: flex; background: var(--surface); border-top: 1px solid var(--border); padding: 8px 6px calc(8px + env(safe-area-inset-bottom)); }
@@ -169,7 +168,7 @@
     <h1>Le Mie Spese 💸</h1>
     <div class="month-nav">
       <button class="month-arrow" onclick="shiftMonth(-1)">&#8249;</button>
-      <span id="current-month-label"></span>
+      <span class="month-label" id="current-month-label"></span>
       <button class="month-arrow" onclick="shiftMonth(1)">&#8250;</button>
     </div>
   </div>
@@ -434,26 +433,13 @@ function updateMonthLabel(){
   document.getElementById('current-month-label').textContent = viewMonth.toLocaleDateString('it-IT',opts);
 }
 
+// ---- MONTH NAV ----
 function shiftMonth(dir){
-  viewMonth = new Date(viewMonth.getFullYear(), viewMonth.getMonth() + dir, 1);
-  // Non andare oltre il mese corrente
+  const next = new Date(viewMonth.getFullYear(), viewMonth.getMonth() + dir, 1);
   const now = new Date();
   const maxMonth = new Date(now.getFullYear(), now.getMonth(), 1);
-  if(viewMonth > maxMonth) viewMonth = maxMonth;
-  updateMonthLabel();
-  renderHome();
-  renderHistory();
-  renderBudget();
-}
-  // simple: just go back one month on click, wrap
-  const prev = new Date(viewMonth);
-  prev.setMonth(prev.getMonth()-1);
-  const isNow = monthKey(viewMonth) === monthKey(new Date());
-  if(!isNow){
-    viewMonth = new Date(now.getFullYear(), now.getMonth(), 1);
-  } else {
-    viewMonth = prev;
-  }
+  if(next > maxMonth) return;
+  viewMonth = next;
   updateMonthLabel();
   renderHome();
   renderHistory();
@@ -738,6 +724,7 @@ function saveExpense(){
   }
   save('expenses',expenses);
   closeModal('add-modal');
+  if(date){ const d = new Date(date); viewMonth = new Date(d.getFullYear(), d.getMonth(), 1); updateMonthLabel(); }
   renderHome();
   showToast('Spesa salvata ✓');
 }
