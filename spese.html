@@ -11,6 +11,8 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
+  .month-nav { display: flex; align-items: center; gap: 8px; }
+  .month-arrow { background: var(--surface2); border: 1px solid var(--border2); border-radius: 20px; width: 30px; height: 30px; font-size: 20px; line-height: 1; color: var(--text2); cursor: pointer; display: flex; align-items: center; justify-content: center; padding-bottom: 2px; }
   :root {
     --bg: #0f0f11;
     --surface: #1a1a1f;
@@ -165,10 +167,11 @@
 <div class="topbar">
   <div class="topbar-inner">
     <h1>Le Mie Spese 💸</h1>
-    <button class="month-pill" onclick="cycleMonth()">
+    <div class="month-nav">
+      <button class="month-arrow" onclick="shiftMonth(-1)">&#8249;</button>
       <span id="current-month-label"></span>
-      <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
-    </button>
+      <button class="month-arrow" onclick="shiftMonth(1)">&#8250;</button>
+    </div>
   </div>
 </div>
 
@@ -431,13 +434,17 @@ function updateMonthLabel(){
   document.getElementById('current-month-label').textContent = viewMonth.toLocaleDateString('it-IT',opts);
 }
 
-function cycleMonth(){
-  const choices = [];
+function shiftMonth(dir){
+  viewMonth = new Date(viewMonth.getFullYear(), viewMonth.getMonth() + dir, 1);
+  // Non andare oltre il mese corrente
   const now = new Date();
-  for(let i=0;i<12;i++){
-    const d = new Date(now.getFullYear(), now.getMonth()-i, 1);
-    choices.push(d);
-  }
+  const maxMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+  if(viewMonth > maxMonth) viewMonth = maxMonth;
+  updateMonthLabel();
+  renderHome();
+  renderHistory();
+  renderBudget();
+}
   // simple: just go back one month on click, wrap
   const prev = new Date(viewMonth);
   prev.setMonth(prev.getMonth()-1);
