@@ -415,8 +415,8 @@ viewMonth.setDate(1);
 
 // ---- UTILS ----
 const fmt = n => '€' + parseFloat(n).toFixed(2).replace('.',',');
-const fmtDate = d => new Date(d).toLocaleDateString('it-IT',{day:'2-digit',month:'short'});
-const monthKey = d => d.toISOString().slice(0,7);
+const fmtDate = d => { const p=d.split('-'); return new Date(parseInt(p[0]),parseInt(p[1])-1,parseInt(p[2])).toLocaleDateString('it-IT',{day:'2-digit',month:'short'}); };
+const monthKey = d => d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0');
 
 function getCat(id){ return categories.find(c=>c.id===id) || {name:'Altro',emoji:'💸'}; }
 
@@ -518,7 +518,9 @@ function renderExpenseList(arr, containerId, compact){
 
 // ---- RENDER HISTORY ----
 function renderHistory(){
-  const arr = historyTab==='all' ? [...expenses] : [...getMonthExpenses(viewMonth)];
+  const now = new Date();
+  const currentMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+  const arr = historyTab==='all' ? [...expenses] : [...getMonthExpenses(currentMonth)];
   arr.sort((a,b)=>b.date.localeCompare(a.date));
   const el = document.getElementById('history-list');
   if(!arr.length){
@@ -724,7 +726,11 @@ function saveExpense(){
   }
   save('expenses',expenses);
   closeModal('add-modal');
-  if(date){ const d = new Date(date); viewMonth = new Date(d.getFullYear(), d.getMonth(), 1); updateMonthLabel(); }
+  if(date){
+    const parts = date.split('-');
+    viewMonth = new Date(parseInt(parts[0]), parseInt(parts[1])-1, 1);
+    updateMonthLabel();
+  }
   renderHome();
   showToast('Spesa salvata ✓');
 }
