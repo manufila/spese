@@ -82,7 +82,7 @@
   .expense-amount { font-family: var(--mono); font-size: 15px; font-weight: 500; color: var(--danger); flex-shrink: 0; }
   .expense-actions { display: flex; gap: 6px; }
   .icon-btn { background: none; border: none; cursor: pointer; padding: 4px; color: var(--text3); line-height: 0; }
-  .icon-btn svg { width: 16px; height: 16px; }
+  .icon-btn svg { width: 16px; height: 16px; pointer-events: none; }
 
   /* Add button */
   .fab { position: fixed; bottom: calc(74px + env(safe-area-inset-bottom)); right: 20px; width: 56px; height: 56px; border-radius: 50%; background: var(--accent); border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 24px rgba(200,245,66,0.35); z-index: 200; }
@@ -549,7 +549,7 @@ function renderHistory(){
           <div style="display:flex;align-items:center;gap:8px">
             <div class="expense-amount">${fmt(e.amount)}</div>
             <button class="icon-btn" onclick="deleteExpense('${e.id}')" style="color:var(--danger)">
-              <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg>
+              <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/></svg>
             </button>
           </div>
         </div>`;
@@ -767,11 +767,10 @@ function saveRecurring(){
 
 // ---- DELETE ----
 function deleteExpense(id){
-  if(!confirm('Eliminare questa spesa?')) return;
   expenses = expenses.filter(e=>e.id!==id);
   save('expenses',expenses);
   renderHome(); renderHistory(); if(currentTab==='budget') renderBudget();
-  showToast('Spesa eliminata');
+  showToast('Spesa eliminata ✓');
 }
 
 function deleteBudget(catId){
